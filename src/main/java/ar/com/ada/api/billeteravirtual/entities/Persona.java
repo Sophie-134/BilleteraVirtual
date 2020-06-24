@@ -13,9 +13,10 @@ public class Persona {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer personaId;
     private String nombre;
-    private Integer dni;
+    private Integer paisId;
+    private Integer tipoDocumentoId;
+    private String documento;
     private Date fechaNacimiento;
-    private String nacionalidad;
     private Usuario usuario;
     // ese persona es el atributo persona de la clase Persona, q esta en billetera
     @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL)
@@ -37,13 +38,6 @@ public class Persona {
         this.nombre = nombre;
     }
 
-    public Integer getDni() {
-        return dni;
-    }
-
-    public void setDni(Integer dni) {
-        this.dni = dni;
-    }
 
     public Date getFechaNacimiento() {
         return fechaNacimiento;
@@ -53,14 +47,7 @@ public class Persona {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public String getNacionalidad() {
-        return nacionalidad;
-    }
-
-    public void setNacionalidad(String nacionalidad) {
-        this.nacionalidad = nacionalidad;
-    }
-
+   
     public Usuario getUsuario() {
         return usuario;
     }
@@ -76,6 +63,30 @@ public class Persona {
     public void setBilletera(Billetera billetera) {
         this.billetera = billetera;
         this.billetera.setPersona(this);
+    }
+
+    public Integer getPaisId() {
+        return paisId;
+    }
+
+    public void setPaisId(Integer paisId) {
+        this.paisId = paisId;
+    }
+
+    public Integer getTipoDocumentoId() {
+        return tipoDocumentoId;
+    }
+
+    public void setTipoDocumentoId(Integer tipoDocumentoId) {
+        this.tipoDocumentoId = tipoDocumentoId;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
 }

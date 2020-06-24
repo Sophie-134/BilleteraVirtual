@@ -42,6 +42,6 @@ public class Billetera {
 
     public void setCuentas(List<Cuenta> cuentas) {
         this.cuentas = cuentas;
-        this.cuentas.
+        
     }
 }
