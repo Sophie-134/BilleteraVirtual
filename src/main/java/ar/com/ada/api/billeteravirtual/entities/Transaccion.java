@@ -28,9 +28,9 @@ public class Transaccion{
     private Integer deUsuarioId;
     @Column(name = "a_usuario")
     private Integer aUsuarioId; 
-    @Column(name = "de_usuario")
+    @Column(name = "de_cuenta")
     private Integer deCuentaId;
-    @Column(name = "a_usuario")
+    @Column(name = "a_cuenta")
     private Integer aCuentaId;  
     
     @ManyToOne
