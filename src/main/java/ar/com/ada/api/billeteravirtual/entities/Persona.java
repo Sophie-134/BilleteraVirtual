@@ -13,10 +13,15 @@ public class Persona {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer personaId;
     private String nombre;
+    @Column(name = "pais_id")
     private Integer paisId;
+    @Column(name = "tipo_ducumento_id")
     private Integer tipoDocumentoId;
     private String documento;
+    @Column(name = "fecha_nacimiento")
     private Date fechaNacimiento;
+
+    @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL)
     private Usuario usuario;
     // ese persona es el atributo persona de la clase Persona, q esta en billetera
     @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL)
@@ -54,12 +59,13 @@ public class Persona {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+        this.usuario.setPersona(this);
     }
 
     public Billetera getBilletera() {
         return billetera;
     }
-
+//La relacion bidireccional se hace a travez del setAlgo()
     public void setBilletera(Billetera billetera) {
         this.billetera = billetera;
         this.billetera.setPersona(this);

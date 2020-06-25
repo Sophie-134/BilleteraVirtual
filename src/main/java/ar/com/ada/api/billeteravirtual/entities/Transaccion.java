@@ -1,21 +1,41 @@
 package ar.com.ada.api.billeteravirtual.entities;
 
 import java.util.Date;
+
+import javax.persistence.*;
+
 import java.math.BigDecimal;
 
+@Entity
+@Table(name="transaccion")
 public class Transaccion{
 
+    @Id
+    @Column(name = "transaccion_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer transaccionId;
     private Date fecha;
+    @Column(name = "estado_id")
     private Integer estadoId;
     private BigDecimal importe;
     private String moneda;
+    @Column(name = "tipo_operacion")
     private Integer tipoOperacion;
+    @Column(name = "concepto_operacion")
     private String conceptoOperacion;
     private String detalle;
+    @Column(name = "de_usuario_id")
     private Integer deUsuarioId;
-    private Integer aUsuarioId;   
+    @Column(name = "a_usuario")
+    private Integer aUsuarioId; 
+    @Column(name = "de_usuario")
+    private Integer deCuentaId;
+    @Column(name = "a_usuario")
+    private Integer aCuentaId;  
     
+    @ManyToOne
+    //en join se pone el nombre de la columna
+    @JoinColumn(name = "cuenta_id", referencedColumnName = "cuenta_id")
     private Cuenta cuenta;
 
     public Integer getTransaccionId() {
@@ -101,9 +121,26 @@ public class Transaccion{
     public Cuenta getCuenta() {
         return cuenta;
     }
-
+//la relacion bidireccional se puede hacer aca, pero queda feo
     public void setCuenta(Cuenta cuenta) {
         this.cuenta = cuenta;
+       // this.cuenta.agregarTransacciones(this);
+    }
+
+    public Integer getDeCuentaId() {
+        return deCuentaId;
+    }
+
+    public void setDeCuentaId(Integer deCuentaId) {
+        this.deCuentaId = deCuentaId;
+    }
+
+    public Integer getaCuentaId() {
+        return aCuentaId;
+    }
+
+    public void setaCuentaId(Integer aCuentaId) {
+        this.aCuentaId = aCuentaId;
     }
     
 
