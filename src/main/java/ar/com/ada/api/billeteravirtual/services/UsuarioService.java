@@ -2,9 +2,19 @@ package ar.com.ada.api.billeteravirtual.services;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.stereotype.Service;
+
+import ar.com.ada.api.billeteravirtual.entities.Usuario;
+
 @Service
 public class UsuarioService {
 
+	public Usuario buscarPorUsername(String username) {
+		return null;
+	}
+
+	public void login(String username, String password) {
+	}
     //1: Metodo crearUsuario
     //1.1:crear persona(setear usuario)
     //1.2:crear un usuario
