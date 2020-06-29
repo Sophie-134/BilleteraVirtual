@@ -13,6 +13,7 @@ import ar.com.ada.api.billeteravirtual.models.response.RegistrationResponse;
 import ar.com.ada.api.billeteravirtual.security.jwt.JWTTokenUtil;
 import ar.com.ada.api.billeteravirtual.services.JWTUserDetailsService;
 import ar.com.ada.api.billeteravirtual.services.UsuarioService;
+import ar.com.ada.api.billeteravirtual.entities.Usuario;
 import ar.com.ada.api.billeteravirtual.models.request.LoginRequest;;
 
 /**
@@ -38,10 +39,11 @@ public class AuthController {
         RegistrationResponse r = new RegistrationResponse();
         // aca creamos la persona y el usuario a traves del service.
         //Insertar codigo aqui
-        //usuarioService.crearUsuario(parametros de req);
+        Usuario usuario = usuarioService.crearUsuario(req.fullName, req.country, req.identificationType, req.identification, req.birthDate, req.email, req.password);
+       //tmb se puede hacer Usuario usuario = usuarioService.crearUsuario(req.fullName, req.cou, blabla);
         r.isOk = true;
         r.message = "Te registraste con exitoooo!!!!!!!";
-        r.userId = 0; // <-- AQUI ponemos el numerito de id para darle a front!
+        r.userId = usuario.getUsuarioId(); // <-- AQUI ponemos el numerito de id para darle a front!
         return ResponseEntity.ok(r);
 
     }

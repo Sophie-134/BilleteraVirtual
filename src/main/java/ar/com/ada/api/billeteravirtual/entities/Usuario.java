@@ -16,7 +16,7 @@ public class Usuario {
     private String username;
     private String password;
     private String email;
-    @Column(name = "fecha_login")
+    @Column(name = "login_date")
     private Date fechaLogin;
 
     @OneToOne

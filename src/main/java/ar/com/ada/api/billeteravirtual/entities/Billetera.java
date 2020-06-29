@@ -13,7 +13,7 @@ public class Billetera {
     @Column(name = "billetera_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer billeraId;
-    @OneToMany
+    @OneToOne
     @JoinColumn(name = "persona_id", referencedColumnName = "persona_id")
     private Persona persona;
 //ese billetera es el atributo billetera de la clase Billetera, q esta en la clase Persona

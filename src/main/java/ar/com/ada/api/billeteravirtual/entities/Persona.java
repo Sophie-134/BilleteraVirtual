@@ -15,7 +15,7 @@ public class Persona {
     private String nombre;
     @Column(name = "pais_id")
     private Integer paisId;
-    @Column(name = "tipo_ducumento_id")
+    @Column(name = "tipo_documento_id")
     private Integer tipoDocumentoId;
     private String documento;
     @Column(name = "fecha_nacimiento")
