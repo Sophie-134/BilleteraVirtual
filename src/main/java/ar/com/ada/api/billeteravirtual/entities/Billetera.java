@@ -46,5 +46,6 @@ public class Billetera {
     }
     public void agregarCuenta(Cuenta cuenta){
         this.cuentas.add(cuenta);
+        cuenta.setBilletera(this);
     }
 }

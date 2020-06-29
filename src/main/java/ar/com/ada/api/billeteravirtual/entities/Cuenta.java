@@ -51,7 +51,7 @@ public class Cuenta {
 
     public void setBilletera(Billetera billetera) {
         this.billetera = billetera;
-        this.billetera.getCuentas().add(this);
+        //this.billetera.getCuentas().add(this);
     }
 
     public List<Transaccion> getTransacciones() {

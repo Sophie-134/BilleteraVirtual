@@ -1,5 +1,6 @@
 package ar.com.ada.api.billeteravirtual.services;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +8,12 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.stereotype.Service;
 
+import ar.com.ada.api.billeteravirtual.entities.Billetera;
+import ar.com.ada.api.billeteravirtual.entities.Cuenta;
 import ar.com.ada.api.billeteravirtual.entities.Persona;
 import ar.com.ada.api.billeteravirtual.entities.Usuario;
 import ar.com.ada.api.billeteravirtual.repositories.UsuarioRepository;
+import ar.com.ada.api.billeteravirtual.security.Crypto;
 
 @Service
 public class UsuarioService {
@@ -17,6 +21,9 @@ public class UsuarioService {
     UsuarioRepository repo;
     @Autowired
     PersonaService personaService;
+    @Autowired
+    BilleteraService billeteraService;
+
 
 	public Usuario buscarPorUsername(String username) {
 		return null;
@@ -40,18 +47,33 @@ public class UsuarioService {
       Persona persona = new Persona();
       persona.setNombre(fullName);
       persona.setPaisId(country);
-      persona.setTipoDocumentoId(identificationType);;
+      persona.setTipoDocumentoId(identificationType);
       persona.setDocumento(identification);
       persona.setFechaNacimiento(birthDate);
 
       Usuario usuario = new Usuario();
       usuario.setUsername(email);
       usuario.setEmail(email);
-      usuario.setPassword(password);
+      usuario.setPassword(Crypto.encrypt(password, email));
 
       persona.setUsuario(usuario);
       personaService.grabar(persona);
-      
+
+      Billetera billetera = new Billetera();
+    
+      Cuenta pesos = new Cuenta();
+      pesos.setSaldo(new BigDecimal(0));
+      pesos.setMoneda("ARS");
+      billetera.agregarCuenta(pesos);
+
+     Cuenta dolares = new Cuenta();
+      dolares.setSaldo(new BigDecimal(0));
+      dolares.setMoneda("USD");
+      billetera.agregarCuenta(dolares);
+
+      persona.setBilletera(billetera);
+      billeteraService.gravarBilletera(billetera);
+
         return usuario; 
     }
 }
