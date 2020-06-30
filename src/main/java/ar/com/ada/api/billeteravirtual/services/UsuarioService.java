@@ -74,6 +74,8 @@ public class UsuarioService {
       persona.setBilletera(billetera);
       billeteraService.gravarBilletera(billetera);
 
-        return usuario; 
+      billeteraService.cargarSaldo(new BigDecimal(500), "ARS", billetera.getBilleteraId(), "Regalo", "Regalo de bienvenida");
+       
+      return usuario; 
     }
 }

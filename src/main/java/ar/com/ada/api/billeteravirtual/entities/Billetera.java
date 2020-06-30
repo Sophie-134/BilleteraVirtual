@@ -4,7 +4,6 @@ import java.util.*;
 
 import javax.persistence.*;
 
-
 @Entity
 @Table(name = "billetera")
 public class Billetera {
@@ -12,20 +11,21 @@ public class Billetera {
     @Id
     @Column(name = "billetera_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer billeraId;
+    private Integer billeteraId;
     @OneToOne
     @JoinColumn(name = "persona_id", referencedColumnName = "persona_id")
     private Persona persona;
-//ese billetera es el atributo billetera de la clase Billetera, q esta en la clase Persona
-    @OneToMany(mappedBy ="billetera", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // ese billetera es el atributo billetera de la clase Billetera, q esta en la
+    // clase Persona
+    @OneToMany(mappedBy = "billetera", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Cuenta> cuentas = new ArrayList<>();
 
-    public Integer getBilleraId() {
-        return billeraId;
+    public Integer getBilleteraId() {
+        return billeteraId;
     }
 
-    public void setBilleraId(Integer billeraId) {
-        this.billeraId = billeraId;
+    public void setBilleteraId(Integer billeteraId) {
+        this.billeteraId = billeteraId;
     }
 
     public Persona getPersona() {
@@ -42,10 +42,22 @@ public class Billetera {
 
     public void setCuentas(List<Cuenta> cuentas) {
         this.cuentas = cuentas;
-        
+
     }
-    public void agregarCuenta(Cuenta cuenta){
+
+    public void agregarCuenta(Cuenta cuenta) {
         this.cuentas.add(cuenta);
         cuenta.setBilletera(this);
     }
+
+    public Cuenta getCuenta(String moneda) {
+
+        for (Cuenta cuenta : this.cuentas) {
+            if (cuenta.getMoneda().equals(moneda)) {
+                return cuenta;
+            }
+        }
+        return null;
+    }
+
 }

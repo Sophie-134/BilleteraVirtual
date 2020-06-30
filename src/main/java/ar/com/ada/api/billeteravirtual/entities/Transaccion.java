@@ -26,11 +26,11 @@ public class Transaccion{
     private String detalle;
     @Column(name = "de_usuario_id")
     private Integer deUsuarioId;
-    @Column(name = "a_usuario")
+    @Column(name = "a_usuario_id")
     private Integer aUsuarioId; 
-    @Column(name = "de_cuenta")
+    @Column(name = "de_cuenta_id")
     private Integer deCuentaId;
-    @Column(name = "a_cuenta")
+    @Column(name = "a_cuenta_id")
     private Integer aCuentaId;  
     
     @ManyToOne
