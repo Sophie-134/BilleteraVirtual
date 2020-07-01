@@ -8,12 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import ar.com.ada.api.billeteravirtual.entities.Billetera;
 import ar.com.ada.api.billeteravirtual.entities.Cuenta;
 import ar.com.ada.api.billeteravirtual.models.response.SaldoResponse;
 import ar.com.ada.api.billeteravirtual.services.BilleteraService;
 
+@RestController
 public class BilleteraController {
     @Autowired
     BilleteraService billeteraService;
@@ -49,9 +51,9 @@ public class BilleteraController {
 
             SaldoResponse saldo = new SaldoResponse();
 
-            saldo.moneda = cuenta.getMoneda();
             saldo.saldo = cuenta.getSaldo();
-            
+            saldo.moneda = cuenta.getMoneda();
+                        
             listSaldo.add(saldo);
             }
      return ResponseEntity.ok(listSaldo);

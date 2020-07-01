@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import org.springframework.stereotype.Service;
@@ -23,13 +24,24 @@ public class UsuarioService {
     PersonaService personaService;
     @Autowired
     BilleteraService billeteraService;
+    
 
 
 	public Usuario buscarPorUsername(String username) {
-		return null;
+		return repo.findByUsername(username);
 	}
 
 	public void login(String username, String password) {
+    /**
+       * Metodo IniciarSesion recibe usuario y contraseña validar usuario y contraseña
+       */
+  
+      Usuario u = buscarPorUsername(username);
+  
+      if (u == null || !u.getPassword().equals(Crypto.encrypt(password, u.getUsername()))) {
+  
+        throw new BadCredentialsException("Usuario o contraseña invalida");
+      }
 	}
     
     //1.3:crear billetera(setear persona, crear cuenta en moneda del pais de la persona)
@@ -78,4 +90,8 @@ public class UsuarioService {
        
       return usuario; 
     }
+
+  
+  
+
 }
