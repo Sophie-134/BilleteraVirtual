@@ -5,6 +5,11 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+import ar.com.ada.api.billeteravirtual.entities.Transaccion.TipoTransaccionEnum;
+
 @Entity
 @Table(name = "cuenta")
 public class Cuenta {
@@ -19,6 +24,7 @@ public class Cuenta {
     private Billetera billetera;
 
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Transaccion> transacciones = new ArrayList<>();
 
     public Integer getCuentaId() {
@@ -64,23 +70,25 @@ public class Cuenta {
 
     // la relacion bidireccional se hace a travez de un metodo(agregarAlgo) q lo
     // agrega a la lista
-    public void agregarTransacciones(Transaccion transaccion) {
+    public void agregarTransaccion(Transaccion transaccion) {
         this.transacciones.add(transaccion);
         transaccion.setCuenta(this);
 
         BigDecimal saldoActual = this.getSaldo();
+        BigDecimal importe = transaccion.getImporte();
+        BigDecimal saldoSumado;
 
-        if (transaccion.getTipoOperacion().equals(1)) {
-            BigDecimal saldoSumado = saldoActual.add(saldo);
-            this.setSaldo(saldoSumado);
+        if (transaccion.getTipoOperacion() == TipoTransaccionEnum.ENTRANTE) {
+            saldoSumado = saldoActual.add(importe);
         } else {
-            BigDecimal saldoSumado = saldoActual.subtract(saldo);
-            this.setSaldo(saldoSumado);
+            saldoSumado = saldoActual.subtract(importe);
         }
+        this.setSaldo(saldoSumado);
+
     }
 
     public Transaccion generarTransaccion(String conceptoOperacion, String detalle, BigDecimal importe,
-            Integer tipoOperacion) {
+            TipoTransaccionEnum tipoOperacion) {
 
         Transaccion transaccion = new Transaccion();
 
@@ -92,7 +100,7 @@ public class Cuenta {
         transaccion.setConceptoOperacion(conceptoOperacion);
         transaccion.setDetalle(detalle);
 
-        if (transaccion.getTipoOperacion() == 1) {// si es de entrada
+        if (transaccion.getTipoOperacion() == TipoTransaccionEnum.ENTRANTE) {// si es de entrada
 
             transaccion.setaUsuarioId(billetera.getPersona().getUsuario().getUsuarioId());
             transaccion.setaCuentaId(this.getCuentaId());
@@ -102,5 +110,13 @@ public class Cuenta {
         }
         return transaccion;
     }
-
+    // opsion 2(nunca me funciono...):
+    /*
+     * 
+     * if (transaccion.getTipoOperacion()== TipoTransaccionEnum.ENTRANTE) {
+     * 
+     * BigDecimal saldoSumado = saldoActual.add(saldo); this.setSaldo(saldoSumado);
+     * } else { BigDecimal saldoSumado = saldoActual.subtract(saldo);
+     * this.setSaldo(saldoSumado); }
+     */
 }

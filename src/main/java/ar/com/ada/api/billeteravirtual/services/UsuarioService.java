@@ -18,80 +18,80 @@ import ar.com.ada.api.billeteravirtual.security.Crypto;
 
 @Service
 public class UsuarioService {
-    @Autowired
-    UsuarioRepository repo;
-    @Autowired
-    PersonaService personaService;
-    @Autowired
-    BilleteraService billeteraService;
-    
+  @Autowired
+  UsuarioRepository repo;
+  @Autowired
+  PersonaService personaService;
+  @Autowired
+  BilleteraService billeteraService;
 
+  public Usuario buscarPorUsername(String username) {
+    return repo.findByUsername(username);
+  }
 
-	public Usuario buscarPorUsername(String username) {
-		return repo.findByUsername(username);
-	}
-
-	public void login(String username, String password) {
+  public void login(String username, String password) {
     /**
-       * Metodo IniciarSesion recibe usuario y contraseña validar usuario y contraseña
-       */
-  
-      Usuario u = buscarPorUsername(username);
-  
-      if (u == null || !u.getPassword().equals(Crypto.encrypt(password, u.getUsername()))) {
-  
-        throw new BadCredentialsException("Usuario o contraseña invalida");
-      }
-	}
-    
-    //1.3:crear billetera(setear persona, crear cuenta en moneda del pais de la persona)
-    //2: nuevo metodo agregarNuevaCuenta
-    //3: metodo iniciarSesion
-    //3.1: recibir el username, password
-    //3.2: validar los datos, devolviendo true/false
- 
-   
+     * Metodo IniciarSesion recibe usuario y contraseña validar usuario y contraseña
+     */
 
-    //1: Metodo crearUsuario
-    //1.1:crear persona(setear usuario)
-    //1.2:crear un usuario
-    public Usuario crearUsuario(String fullName, int country, int identificationType, String identification, Date birthDate, String email, String password){
-      Persona persona = new Persona();
-      persona.setNombre(fullName);
-      persona.setPaisId(country);
-      persona.setTipoDocumentoId(identificationType);
-      persona.setDocumento(identification);
-      persona.setFechaNacimiento(birthDate);
+    Usuario u = buscarPorUsername(username);
 
-      Usuario usuario = new Usuario();
-      usuario.setUsername(email);
-      usuario.setEmail(email);
-      usuario.setPassword(Crypto.encrypt(password, email));
+    if (u == null || !u.getPassword().equals(Crypto.encrypt(password, u.getUsername()))) {
 
-      persona.setUsuario(usuario);
-      personaService.grabar(persona);
-
-      Billetera billetera = new Billetera();
-    
-      Cuenta pesos = new Cuenta();
-      pesos.setSaldo(new BigDecimal(0));
-      pesos.setMoneda("ARS");
-      billetera.agregarCuenta(pesos);
-
-     Cuenta dolares = new Cuenta();
-      dolares.setSaldo(new BigDecimal(0));
-      dolares.setMoneda("USD");
-      billetera.agregarCuenta(dolares);
-
-      persona.setBilletera(billetera);
-      billeteraService.gravarBilletera(billetera);
-
-      billeteraService.cargarSaldo(new BigDecimal(500), "ARS", billetera.getBilleteraId(), "Regalo", "Regalo de bienvenida");
-       
-      return usuario; 
+      throw new BadCredentialsException("Usuario o contraseña invalida");
     }
+  }
 
-  
-  
+  // 1.3:crear billetera(setear persona, crear cuenta en moneda del pais de la
+  // persona)
+  // 2: nuevo metodo agregarNuevaCuenta
+  // 3: metodo iniciarSesion
+  // 3.1: recibir el username, password
+  // 3.2: validar los datos, devolviendo true/false
+
+  // 1: Metodo crearUsuario
+  // 1.1:crear persona(setear usuario)
+  // 1.2:crear un usuario
+  public Usuario crearUsuario(String nombre, int pais, int tipoDocumento, String documento, Date fechaNacimiento,
+      String email, String password) {
+        
+    Persona persona = new Persona();
+    persona.setNombre(nombre);
+    persona.setPaisId(pais);
+    persona.setTipoDocumentoId(tipoDocumento);
+    persona.setDocumento(documento);
+    persona.setFechaNacimiento(fechaNacimiento);
+
+    Usuario usuario = new Usuario();
+    usuario.setUsername(email);
+    usuario.setEmail(email);
+    usuario.setPassword(Crypto.encrypt(password, email));
+
+    persona.setUsuario(usuario);
+    personaService.grabar(persona);
+
+    Billetera billetera = new Billetera();
+
+    Cuenta pesos = new Cuenta();
+    pesos.setSaldo(new BigDecimal(0));
+    pesos.setMoneda("ARS");
+    billetera.agregarCuenta(pesos);
+
+    Cuenta dolares = new Cuenta();
+    dolares.setSaldo(new BigDecimal(0));
+    dolares.setMoneda("USD");
+    billetera.agregarCuenta(dolares);
+
+    persona.setBilletera(billetera);
+    billeteraService.grabarBilletera(billetera);
+
+    billeteraService.cargarSaldo(new BigDecimal(500), "ARS", billetera, "Regalo", "Regalo de bienvenida");
+
+    return usuario;
+  }
+
+  public Usuario buscarPorEmail(String email) {
+    return repo.findByEmail(email);
+  }
 
 }
