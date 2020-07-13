@@ -15,6 +15,7 @@ import ar.com.ada.api.billeteravirtual.entities.Persona;
 import ar.com.ada.api.billeteravirtual.entities.Usuario;
 import ar.com.ada.api.billeteravirtual.repositories.UsuarioRepository;
 import ar.com.ada.api.billeteravirtual.security.Crypto;
+import ar.com.ada.api.billeteravirtual.sistema.comm.EmailService;
 
 @Service
 public class UsuarioService {
@@ -24,6 +25,8 @@ public class UsuarioService {
   PersonaService personaService;
   @Autowired
   BilleteraService billeteraService;
+  @Autowired
+  EmailService emailService;
 
   public Usuario buscarPorUsername(String username) {
     return repo.findByUsername(username);
@@ -87,6 +90,7 @@ public class UsuarioService {
 
     billeteraService.cargarSaldo(new BigDecimal(500), "ARS", billetera, "Regalo", "Regalo de bienvenida");
 
+    emailService.SendEmail(usuario.getEmail(), "Bienvenide a la Billetera Virtual", "Has recibido 500$ de regalo por su registro");
     return usuario;
   }
 

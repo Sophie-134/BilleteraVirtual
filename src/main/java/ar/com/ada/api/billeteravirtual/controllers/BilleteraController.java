@@ -3,7 +3,10 @@ package ar.com.ada.api.billeteravirtual.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.IdClass;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ar.com.ada.api.billeteravirtual.entities.Billetera;
 import ar.com.ada.api.billeteravirtual.entities.Cuenta;
+import ar.com.ada.api.billeteravirtual.entities.Transaccion;
 import ar.com.ada.api.billeteravirtual.entities.Transaccion.ResultadoTransaccionEnum;
 import ar.com.ada.api.billeteravirtual.models.request.CargaRequest;
 import ar.com.ada.api.billeteravirtual.models.request.EnvioSaldoRequest;
 import ar.com.ada.api.billeteravirtual.models.response.SaldoResponse;
+import ar.com.ada.api.billeteravirtual.models.response.TransacctionListResponse;
 import ar.com.ada.api.billeteravirtual.models.response.TransacctionResponse;
 import ar.com.ada.api.billeteravirtual.services.BilleteraService;
 
@@ -71,7 +76,8 @@ public class BilleteraController {
      * "moneda": "importe": }
      */
     @PostMapping("/billeteras/{id}/recargas")
-    public ResponseEntity<TransacctionResponse> cargarSaldo(@PathVariable Integer id, @RequestBody CargaRequest recarga) {
+    public ResponseEntity<TransacctionResponse> cargarSaldo(@PathVariable Integer id,
+            @RequestBody CargaRequest recarga) {
 
         TransacctionResponse response = new TransacctionResponse();
 
@@ -91,19 +97,48 @@ public class BilleteraController {
             @RequestBody EnvioSaldoRequest envio) {
 
         TransacctionResponse response = new TransacctionResponse();
-        ResultadoTransaccionEnum resultado = billeteraService.enviarSaldo(envio.importe, envio.moneda, id, envio.email, envio.motivo, envio.detalle);
-        
-        if(resultado == ResultadoTransaccionEnum.INICIADA){
+        ResultadoTransaccionEnum resultado = billeteraService.enviarSaldo(envio.importe, envio.moneda, id, envio.email,
+                envio.motivo, envio.detalle);
 
-        response.isOk = true;
-        response.message = "Enviaste el dinero con exito!!";
+        if (resultado == ResultadoTransaccionEnum.INICIADA) {
 
-        return ResponseEntity.ok(response);
+            response.isOk = true;
+            response.message = "Enviaste el dinero con exito!!";
+
+            return ResponseEntity.ok(response);
+        }
+        response.isOk = false;
+        response.message = "Hubo un error al realizar la operacion" + resultado;
+
+        return ResponseEntity.badRequest().body(response);
     }
-    response.isOk = false;
-    response.message = "Hubo un error al realizar la operacion" + resultado;
-    
-    return ResponseEntity.badRequest().body(response);
-}
+
+    @GetMapping("/billeteras/{id}/transaccion/{moneda}")
+    public ResponseEntity<List<TransacctionListResponse>> listarTransacciones(@PathVariable Integer id,
+            @PathVariable String moneda) {
+
+        Billetera billetera = new Billetera();
+        billetera = billeteraService.buscarBilleteraPorId(id);
+        if (billetera == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<Transaccion> transacciones = billeteraService.buscarTransacciones(id, moneda);
+        List<TransacctionListResponse> respTrans = new ArrayList<>();
+
+        for (Transaccion transaccion : transacciones) {
+
+            TransacctionListResponse tlr = new TransacctionListResponse();
+            tlr.fecha = transaccion.getFecha();
+            tlr.importe = transaccion.getImporte();
+            tlr.moneda = transaccion.getMoneda();
+            tlr.tipoOperacion =transaccion.getTipoOperacion();
+            tlr.conceptoOperacion =transaccion.getConceptoOperacion();
+            tlr.detalle =transaccion.getDetalle();
+            
+            respTrans.add(tlr);
+        }
+        return ResponseEntity.ok(respTrans);
+    }
 
 }

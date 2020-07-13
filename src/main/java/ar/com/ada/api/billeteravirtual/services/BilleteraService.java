@@ -2,6 +2,7 @@ package ar.com.ada.api.billeteravirtual.services;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import ar.com.ada.api.billeteravirtual.entities.*;
 import ar.com.ada.api.billeteravirtual.entities.Transaccion.ResultadoTransaccionEnum;
 import ar.com.ada.api.billeteravirtual.entities.Transaccion.TipoTransaccionEnum;
 import ar.com.ada.api.billeteravirtual.repositories.BilleteraRepository;
+import ar.com.ada.api.billeteravirtual.sistema.comm.EmailService;
 
 @Service
 public class BilleteraService {
@@ -17,6 +19,8 @@ public class BilleteraService {
     BilleteraRepository repo;
     @Autowired
     UsuarioService usuarioService;
+    @Autowired
+  EmailService emailService;
 
     public void grabarBilletera(Billetera billetera) {
         repo.save(billetera);
@@ -36,6 +40,7 @@ public class BilleteraService {
 
         cargarSaldo(saldo, moneda, billetera, conceptoOperacion, detalle);
 
+        emailService.SendEmail(billetera.getPersona().getUsuario().getEmail(), "Su Billetera Virtual", "Has realizado una carga de "+ saldo +" "+ moneda);
         // ??? this.grabarBilletera(billetera);
     }
 
@@ -80,8 +85,8 @@ public class BilleteraService {
     // 2.2: buscar cuenta por moneda
     // 2.3: actualizar saldo de la cuenta origen y destino
     // 2.4: generar 2 transacciones
-    public ResultadoTransaccionEnum enviarSaldo(BigDecimal importe, String moneda, Integer billeteraOrigenId, Integer billeteraDestinoId,
-            String conceptoOperacion, String detalle) {
+    public ResultadoTransaccionEnum enviarSaldo(BigDecimal importe, String moneda, Integer billeteraOrigenId,
+            Integer billeteraDestinoId, String conceptoOperacion, String detalle) {
 
         if (importe.compareTo(new BigDecimal(0)) == -1)
             return ResultadoTransaccionEnum.ERROR_IMPORTE_NEGATIVO;
@@ -121,7 +126,9 @@ public class BilleteraService {
         cuentaEntrante.agregarTransaccion(tEntrante);
 
         this.grabarBilletera(billeteraSal);
+        emailService.SendEmail(billeteraSal.getPersona().getUsuario().getEmail(), "Su Billetera Virtual te informa", "Has realizado el envio de "+ importe +" "+ moneda + " a "+ billeteraEnt.getPersona().getUsuario().getEmail()+ " con exito.");
         this.grabarBilletera(billeteraEnt);
+        emailService.SendEmail(billeteraEnt.getPersona().getUsuario().getEmail(), "Su Billetera Virtual te informa", "Has recibido "+ importe +" "+ moneda + " de " + billeteraSal.getPersona().getUsuario().getEmail());
 
         return ResultadoTransaccionEnum.INICIADA;
     }
@@ -136,13 +143,22 @@ public class BilleteraService {
                 usuarioDestino.getPersona().getBilletera().getBilleteraId(), concepto, detalle);
     }
 
-    /*public void enviarSaldo(BigDecimal importe, String moneda, String email, Integer billeteraOrigenId,
-            String concepto, String detalle) {
+    /*
+     * public void enviarSaldo(BigDecimal importe, String moneda, String email,
+     * Integer billeteraOrigenId, String concepto, String detalle) {
+     * 
+     * Usuario usuarioDestino = usuarioService.buscarPorEmail(email);
+     * this.enviarSaldo(importe, moneda, billeteraOrigenId,
+     * usuarioDestino.getPersona().getBilletera().getBilleteraId(), concepto,
+     * detalle);
+     * 
+     * }
+     */
 
-        Usuario usuarioDestino = usuarioService.buscarPorEmail(email);
-        this.enviarSaldo(importe, moneda, billeteraOrigenId,
-                usuarioDestino.getPersona().getBilletera().getBilleteraId(), concepto, detalle);
-
-    }*/
+    public List<Transaccion> buscarTransacciones(Integer billeteraId, String moneda) {
+            Billetera billetera = repo.findByBilleteraId(billeteraId);
+            Cuenta cuenta = billetera.getCuenta(moneda);
+            return cuenta.getTransacciones();
+    }
 
 }
