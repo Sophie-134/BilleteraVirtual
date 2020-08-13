@@ -2,6 +2,8 @@ package ar.com.ada.api.billeteravirtual.services;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -96,6 +98,18 @@ public class UsuarioService {
 
   public Usuario buscarPorEmail(String email) {
     return repo.findByEmail(email);
+  }
+
+  public Map<String, Object> getUserClaims(Usuario usuario) {
+    Map<String, Object> claims = new HashMap<>();
+
+    claims.put("billeteraId", usuario.getPersona().getBilletera().getBilleteraId());
+    claims.put("saldoARS", usuario.getPersona().getBilletera().getCuenta("ARS").getSaldo());
+
+//KEY: billetera, value: 8
+//KEY: saldoARS, value: 10500
+//HASH TABLE
+    return claims;
   }
 
 }
