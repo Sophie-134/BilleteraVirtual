@@ -13,7 +13,7 @@ Para utilizar este proyecto desde Heroku solo necesitas tener un navegador web, 
 
 Documentación de Postman.
 
-Link: https://documenter.getpostman.com/view/11716278/T1Dv9b2f
+Link: https://documenter.getpostman.com/view/11716278/TVYJ6wwn
 
 # Despliegue 📦
 Deployado con Heroku
